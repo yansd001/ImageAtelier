@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { Settings, Sparkles, Search, Heart, SlidersHorizontal, Copy, Trash2, X, ChevronLeft, ChevronRight, ChevronDown, Download, Image as ImageIcon, LoaderCircle, AlertCircle, Check, Upload, Paperclip, ArrowRight, RefreshCw } from 'lucide-react'
+import { Settings, Sparkles, Search, Heart, SlidersHorizontal, Copy, Trash2, X, ChevronLeft, ChevronRight, ChevronDown, Download, Image as ImageIcon, LoaderCircle, AlertCircle, Check, Upload, Paperclip, ArrowRight, RefreshCw, Github } from 'lucide-react'
 import type { GenerationParams, Provider, ReferenceImage, Settings as AppSettings, Task } from './types'
 import { defaultParams, defaultSettings } from './types'
 import { fetchAvailableModels, generateImages } from './lib/imageApi'
@@ -157,7 +157,7 @@ export default function App() {
   return (
     <div className="app-shell">
       <header className="topbar">
-        <div className="brand"><div className="brand-mark"><img src="/logo.png" alt="烟神殿" /></div><div><strong>烟神殿生图工具</strong><span>多模型生图画廊</span></div></div>
+        <div className="brand"><div className="brand-mark"><img src="./logo.png" alt="烟神殿" /></div><div><strong>烟神殿生图工具</strong><span>多模型生图画廊</span></div></div>
         <div className="topbar-actions"><div className="status-pill"><span className={generating ? 'status-dot busy' : hasApiKey ? 'status-dot' : 'status-dot missing'} />{generating ? `${generating} 个任务生成中` : hasApiKey ? '工作区已就绪' : 'API 密钥未配置'}</div><button className="icon-button" onClick={() => setSettingsOpen(true)} title="配置 API"><Settings size={18} /></button></div>
       </header>
       <section className="modelbar"><div className="modelbar-inner"><div className="modelbar-title"><span className="eyebrow">MODEL</span><strong>选择生图模型</strong></div><div className="modelbar-provider"><span className="compact-label">提供商</span><div className="segmented"><button className={provider === 'openai' ? 'active' : ''} onClick={() => changeProvider('openai')}>OpenAI</button><button className={provider === 'gemini' ? 'active' : ''} onClick={() => changeProvider('gemini')}>Gemini</button></div></div><label className="modelbar-model"><span className="compact-label">生图模型 {modelsLoading && <em>加载中</em>}</span><ModelComboBox value={model} onChange={setModel} options={availableModels} /></label></div></section>
@@ -172,6 +172,7 @@ export default function App() {
         <textarea className="bottom-prompt-input" value={prompt} onChange={(event) => setPrompt(event.target.value)} onPaste={(event) => void handlePromptPaste(event)} placeholder="描述你想生成的图片，可直接粘贴图片作为参考图..." rows={2} onKeyDown={(event) => { if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') { event.preventDefault(); void submit() } }} />
         <div className="bottom-controls"><div className="bottom-parameter-area">{provider === 'openai' ? <OpenAIParams params={params} updateParam={updateParam} /> : <GeminiParams params={params} updateParam={updateParam} />}</div><div className="bottom-reference-area"><input ref={referenceInputRef} className="hidden-file-input" type="file" accept="image/*" multiple onChange={(event) => void addReferenceFiles(event.target.files)} /><button className="attachment-button" onClick={() => referenceInputRef.current?.click()} title="上传参考图"><Paperclip size={18} /></button></div><button className={`generate-icon-button ${prompt.trim() && hasApiKey && tasksLoaded ? 'ready' : ''}`} onClick={() => void submit()} disabled={generating > 0 || !tasksLoaded} title={!tasksLoaded ? '正在加载本地画廊' : !hasApiKey ? 'API 密钥未配置' : prompt.trim() ? '生成图片' : '请输入提示词'}><ArrowRight size={21} /></button></div>
       </section>
+      <footer className="app-footer"><a href="https://github.com/yansd001/ImageAtelier" target="_blank" rel="noreferrer"><Github size={15} /><span>yansd001/ImageAtelier</span></a></footer>
       {settingsOpen && <SettingsModal settings={settings} onSave={(next) => { setSettings(next); setSettingsOpen(false); setNotice({ type: 'success', text: '配置已保存' }) }} onClose={() => setSettingsOpen(false)} />}
       {lightbox && lightboxImage && lightboxTask && <Lightbox task={lightboxTask} index={lightbox.index} src={lightboxImage} onClose={() => setLightbox(null)} onChange={(index) => setLightbox({ taskId: lightboxTask.id, index })} onDownloadError={(text) => setNotice({ type: 'error', text })} />}
       {referenceLightboxIndex !== null && referenceImages[referenceLightboxIndex] && <ReferenceLightbox images={referenceImages} index={referenceLightboxIndex} onClose={() => setReferenceLightboxIndex(null)} onChange={setReferenceLightboxIndex} />}

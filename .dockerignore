@@ -1,0 +1,9 @@
+.git
+.github
+node_modules
+build
+dist
+release
+*.local
+*.tsbuildinfo
+npm-debug.log*
