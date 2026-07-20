@@ -119,12 +119,13 @@ export async function hydrateTasks(tasks: Task[]) {
   })))
 }
 
-export function loadSettings(): Settings {
+export function loadSettings(search = typeof window === 'undefined' ? '' : window.location.search): Settings {
+  let settings: Settings = defaultSettings
   try {
     const parsed = JSON.parse(localStorage.getItem(SETTINGS_KEY) || 'null') as (Partial<Settings> & { baseUrl?: string; apiKey?: string }) | null
     const openaiBaseUrl = parsed?.openai?.baseUrl === 'https://api.openai.com/v1' ? '' : parsed?.openai?.baseUrl
     const geminiBaseUrl = parsed?.gemini?.baseUrl === 'https://generativelanguage.googleapis.com/v1beta' ? '' : parsed?.gemini?.baseUrl
-    return {
+    settings = {
       global: {
         ...defaultSettings.global,
         ...parsed?.global,
@@ -134,7 +135,16 @@ export function loadSettings(): Settings {
       openai: { ...defaultSettings.openai, ...parsed?.openai, baseUrl: openaiBaseUrl ?? defaultSettings.openai.baseUrl },
       gemini: { ...defaultSettings.gemini, ...parsed?.gemini, baseUrl: geminiBaseUrl ?? defaultSettings.gemini.baseUrl },
     }
-  } catch { return defaultSettings }
+  } catch {}
+  const params = new URLSearchParams(search)
+  return {
+    ...settings,
+    global: {
+      ...settings.global,
+      ...(params.has('baseurl') ? { baseUrl: params.get('baseurl') ?? '' } : {}),
+      ...(params.has('apikey') ? { apiKey: params.get('apikey') ?? '' } : {}),
+    },
+  }
 }
 
 export function saveSettings(settings: Settings) { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)) }

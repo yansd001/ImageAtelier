@@ -37,6 +37,14 @@ docker run --rm -p 8080:80 ghcr.io/yansd001/imageatelier:latest
 
 打开页面后，在右上角设置中填写全局 `Base URL` 和 `API Key`。Base URL 只需要填写域名，例如 `https://code.yansd666.com`，程序会自动为 OpenAI 追加 `/v1`、为 Gemini 追加 `/v1beta`。OpenAI、Gemini 也可以单独填写配置进行覆盖。左侧选择提供商与模型，模型既可以从下拉建议中选择，也可以直接输入自定义模型 ID。
 
+也可以通过可选的 URL 查询参数直接设置全局配置：
+
+```text
+https://example.com/?baseurl=https%3A%2F%2Fcode.yansd666.com&apikey=YOUR_API_KEY
+```
+
+`baseurl` 和 `apikey` 可以单独使用。参数存在时会覆盖浏览器中已保存的对应全局配置，并继续保存到本地；不传参数时仍使用原有配置。参数值应进行 URL 编码，且 API Key 会出现在浏览器地址、历史记录和可能的服务器日志中，仅应在可信环境下使用。
+
 - OpenAI 显示尺寸、质量、背景、输出格式、生成数量，调用 `/images/generations`。
 - Gemini 显示画面比例、图像分辨率、生成数量，调用 `models/{model}:generateContent`，解析 `inlineData` 图片响应。
 
